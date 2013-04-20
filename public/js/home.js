@@ -2,87 +2,82 @@
 /*
 A long-polling example.
 */
+require(['jquery'], function($) {
+  var RETRY_TIME, displayMessages, getLastRequest, retries;
 
+  RETRY_TIME = 1000;
+  retries = 3;
+  displayMessages = function(messages, displayList) {
+    var message, _i, _len, _results;
 
-(function() {
-  require(['jquery'], function($) {
-    var RETRY_TIME, displayMessages, getLastRequest, retries;
-
-    RETRY_TIME = 1000;
-    retries = 3;
-    displayMessages = function(messages, displayList) {
-      var message, _i, _len, _results;
-
-      _results = [];
-      for (_i = 0, _len = messages.length; _i < _len; _i++) {
-        message = messages[_i];
-        _results.push($('<li>').text(message.msg).appendTo(displayList));
-      }
-      return _results;
+    _results = [];
+    for (_i = 0, _len = messages.length; _i < _len; _i++) {
+      message = messages[_i];
+      _results.push($('<li>').text(message.msg).appendTo(displayList));
+    }
+    return _results;
+  };
+  getLastRequest = function(response) {
+    return {
+      last: response.last
     };
-    getLastRequest = function(response) {
-      return {
-        last: response.last
-      };
-    };
-    return $(function() {
-      var chatDisplay, chatForm, longpoll, mainChat;
+  };
+  return $(function() {
+    var chatDisplay, chatForm, longpoll, mainChat;
 
-      mainChat = $('#main-chat');
-      chatForm = mainChat.children('form').first();
-      chatDisplay = mainChat.children('.display').first();
-      longpoll = function(lastRequest) {
-        lastRequest = lastRequest || {};
-        return $.ajax({
-          url: chatForm.attr('action'),
-          type: 'GET',
-          data: lastRequest,
-          dataType: 'json',
-          success: function(response) {
-            var newLastRequest;
+    mainChat = $('#main-chat');
+    chatForm = mainChat.children('form').first();
+    chatDisplay = mainChat.children('.display').first();
+    longpoll = function(lastRequest) {
+      lastRequest = lastRequest || {};
+      return $.ajax({
+        url: chatForm.attr('action'),
+        type: 'GET',
+        data: lastRequest,
+        dataType: 'json',
+        success: function(response) {
+          var newLastRequest;
 
-            if ((response != null ? response.evts : void 0) != null) {
-              displayMessages(response.evts, chatDisplay);
-            }
-            newLastRequest = getLastRequest(response);
-            return longpoll(newLastRequest);
-          },
-          error: function() {
-            retries--;
-            if (retries > 0) {
-              console.error("Failed long-polling. Retrying in " + RETRY_TIME + "ms");
-              return setTimeout(function() {
-                return longpoll(lastRequest);
-              }, RETRY_TIME);
-            } else {
-              return console.error("Failed long-polling. Out of retries.");
-            }
+          if ((response != null ? response.evts : void 0) != null) {
+            displayMessages(response.evts, chatDisplay);
           }
-        });
-      };
-      chatForm.submit(function(event) {
-        event.preventDefault();
-        return $.ajax({
-          url: chatForm.attr('action'),
-          type: chatForm.attr('method'),
-          data: chatForm.serializeArray(),
-          success: function(data, textStatus, xhr) {
-            var location;
-
-            chatForm.get(0).reset();
-            location = xhr.getResponseHeader('location');
-            return console.log("Created message " + location);
-          },
-          error: function() {
-            return console.error("Something bad happened trying to POST the message.");
+          newLastRequest = getLastRequest(response);
+          return longpoll(newLastRequest);
+        },
+        error: function() {
+          retries--;
+          if (retries > 0) {
+            console.error("Failed long-polling. Retrying in " + RETRY_TIME + "ms");
+            return setTimeout(function() {
+              return longpoll(lastRequest);
+            }, RETRY_TIME);
+          } else {
+            return console.error("Failed long-polling. Out of retries.");
           }
-        });
+        }
       });
-      return longpoll();
-    });
-  });
+    };
+    chatForm.submit(function(event) {
+      event.preventDefault();
+      return $.ajax({
+        url: chatForm.attr('action'),
+        type: chatForm.attr('method'),
+        data: chatForm.serializeArray(),
+        success: function(data, textStatus, xhr) {
+          var location;
 
-}).call(this);
+          chatForm.get(0).reset();
+          location = xhr.getResponseHeader('location');
+          return console.log("Created message " + location);
+        },
+        error: function() {
+          return console.error("Something bad happened trying to POST the message.");
+        }
+      });
+    });
+    return longpoll();
+  });
+});
 
 /*
 //@ sourceMappingURL=home.map

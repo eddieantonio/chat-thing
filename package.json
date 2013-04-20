@@ -4,18 +4,19 @@
   "description": "Poorly documented, obligatory, long-polling chat thing in Node",
   "main": "lib/index.js",
   "scripts": {
-    "start":        "up --watch --port 3000 lib/server",
+    "start": "up --watch --port 3000 lib/server",
+    "prestart": "cake build"
   },
   "repository": {
     "type": "git",
     "url": "git://github.com/eddieantonio/chat-thing.git"
   },
   "dependencies": {
-      "up": "*",
+      "up": "0.2.2",
       "express": ">=3.0",
-      "jade": "*",
-      "mongodb": "*"
+      "jade": ">=0.29",
+      "mongodb": ">=1.2"
   },
   "author": "Eddie Antonio Santos <easantos@ualberta.ca>",
-  "license": "BSD"
+  "license": "MIT"
 }
