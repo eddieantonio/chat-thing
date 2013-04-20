@@ -1,0 +1,21 @@
+{
+  "name": "chat-thing",
+  "version": "0.0.1",
+  "description": "Poorly documented, obligatory, long-polling chat thing in Node",
+  "main": "lib/index.js",
+  "scripts": {
+    "start":        "up --watch --port 3000 lib/server",
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/eddieantonio/chat-thing.git"
+  },
+  "dependencies": {
+      "up": "*",
+      "express": ">=3.0",
+      "jade": "*",
+      "mongodb": "*"
+  },
+  "author": "Eddie Antonio Santos <easantos@ualberta.ca>",
+  "license": "BSD"
+}

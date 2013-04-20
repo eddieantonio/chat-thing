@@ -1,0 +1,16 @@
+!!!
+html
+  head
+    title= NAME
+    script(src='/js/require-jquery.js', data-main='/js/home')
+  body
+    header
+      h1 #{NAME} chat service!
+
+    #content
+      #main-chat.chat
+        ul.display
+        form(method='POST', action='/message')
+          input(type='text', name='message')
+          input(type='submit', value='Yarr!')
+
