@@ -1,17 +1,9 @@
-!!!
-html
-  head
-    title= NAME
-    script(src='//cdnjs.cloudflare.com/ajax/libs/require-jquery/0.25.0/require-jquery.min.js',
-      data-main='/js/home')
-  body
-    header
-      h1 #{NAME} chat service!
+extends layout
 
-    #content
-      #main-chat.chat
-        ul.display
-        form(method='POST', action='/message')
-          input(type='text', name='message')
-          input(type='submit', value='Yarr!')
+block content
+  #main-chat.chat
+    ul.display
+    form(method='POST', action='/message')
+      input(type='text', name='message')
+      input(type='submit', value='Yarr!')
 

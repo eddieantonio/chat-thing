@@ -17,7 +17,7 @@ DEVELOPMENT = process.env.NODE_ENV is 'development'
 
 # Set up template locals.
 app.locals
-  NAME: 'Keelhaul'
+  NAME: 'Chat Thing'
 
 # Set up middleware.
 app.use express.logger('dev')
