@@ -1,5 +1,7 @@
 ###
-Express server setup
+Express server setup.
+
+Exports a server for use with Up.
 ###
 
 express = require 'express'
@@ -8,12 +10,14 @@ path = require 'path'
 messages = require './routes/messages'
 
 
-# Boilerplate up/express setup.
+
+# Boilerplate Up/Express setup.
 app = express()
 server = app.listen()
 
-publicFolder = path.join __dirname, '..', 'public'
+# Some constants.
 DEVELOPMENT = process.env.NODE_ENV is 'development'
+publicFolder = path.join __dirname, '..', 'public'
 
 # Set up template locals.
 app.locals
@@ -21,11 +25,13 @@ app.locals
 
 # Set up middleware.
 app.use express.logger('dev')
-app.use express.favicon()
 app.set 'views', path.join __dirname, '..', 'views'
 app.set 'view engine', 'jade'
+app.use express.favicon()
 app.use express.bodyParser()
 app.use express.static(publicFolder)
+
+
 
 # Routes!
 app.get '/', (req, res) ->
@@ -37,13 +43,10 @@ app.get '/message', messages.longpoll
 app.get '/message/:id', messages.getMessage
 
 # For debugging client-side CoffeeScript
-#app.use express.static(__dirname + '/websrc/') if DEVELOPMENT
 if DEVELOPMENT
   app.get '/websrc/:file', (req, res) ->
     {file} = req.params
     res.sendfile "./websrc/#{file}"
-
-
 
 # Export for `up` to use.
 module.exports = server

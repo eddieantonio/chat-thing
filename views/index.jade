@@ -1,9 +1,19 @@
 extends layout
 
+// The home page that provides a simple chat interface.
+
 block content
   #main-chat.chat
     ul.display
-    form(method='POST', action='/message')
-      input(type='text', name='message')
-      input(type='submit', value='Yarr!')
+    .chat-input
+      form(method='POST', action='/message')
+        input(type='text', name='message')
+        input(type='submit', value='Yarr!')
+
+block extraScripts
+  // Underscore templates!
+  script(type='text/html', id='_t-message-body')
+    li
+      //.author <%= author %>
+      .msg <%= messageText %>
 

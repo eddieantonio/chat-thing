@@ -1,25 +1,35 @@
 ###
 A long-polling example.
 ###
-require ['jquery'], ($) ->
+require ['jquery', 'underscore-shim'], ($, _) ->
 
-  RETRY_TIME = 1000
+  RETRY_TIME = 5000
   retries = 3
 
-  displayMessages = (messages, displayList) ->
-    $('<li>').text(message.msg).appendTo(displayList) for message in messages
+  # This will be defined on document ready, when the template can be parsed
+  renderMessage = undefined
+
+  # Displays messages from the event div in the given jQuery.
+  displayMessages = (events, displayList) ->
+    displayList.append(
+      renderMessage
+        author: 'no one'
+        messageText: event.msg
+    ) for event in events
 
   # Get the very last timestamp of the last request.
   getLastRequest = (response) ->
     last: response.last
 
-
   $ ->
 
     # First, get a bunch of selectors from the page.
     mainChat = $ '#main-chat'
-    chatForm = mainChat.children('form').first()
+    chatForm = mainChat.find('form').first()
     chatDisplay = mainChat.children('.display').first()
+
+    # This is really ugly, but no matter.
+    renderMessage = _.template $('#_t-message-body').html()
 
     # Make a function that will long-poll forever.
     longpoll = (lastRequest) ->
@@ -62,6 +72,7 @@ require ['jquery'], ($) ->
           location = xhr.getResponseHeader 'location'
           console.log "Created message #{location}"
         error: ->
+          # Should display something like 'Could not deliver message...'
           console.error "Something bad happened trying to POST the message."
 
     # Initiate the long-polling

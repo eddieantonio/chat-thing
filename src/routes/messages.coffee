@@ -92,15 +92,19 @@ exports.longpoll = (req, res) ->
 
 
 ###
-Get a very specific message
+Get a specific message, by URL.
 ###
 exports.getMessage = (req, res) ->
 
   {id} = req.params
 
+  try
+    oid = new mongo.ObjectID id
+  catch err
+    return res.send 400
+
   msgDbConnect (events, db) ->
 
-    oid = new mongo.ObjectID id
     events.findOne {_id: oid}, (err, doc) ->
       if doc?
         res.send doc

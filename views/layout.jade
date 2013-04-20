@@ -1,13 +1,12 @@
+- var actualTitle = (typeof title === 'undefined') ? NAME : NAME + ' - ' + title
+- var requireMain = (typeof requireMain === 'undefined') ? 'home' : requireMain
 !!!
 html
   head
-    title
-      if typeof title !== 'undefined'
-        - NAME + ' - ' + title
-      else
-        - NAME
+    title= actualTitle
     script(src='//cdnjs.cloudflare.com/ajax/libs/require-jquery/0.25.0/require-jquery.min.js',
-      data-main='/js/home')
+      data-main='/js/' + requireMain)
+    block extraScripts
   body
     header
       h1.logo #{NAME}
