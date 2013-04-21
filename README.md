@@ -8,10 +8,18 @@ Requires the following binaries:
  * `cofffe` -- `npm install -g coffeescript`
  * `up` -- `npm install -g up`
 
-Then install package dependencies:
+As well as the mongodb database client, mongodb.
+
+Install package dependencies:
 
 ```sh
 npm install
+```
+
+And setup the database:
+
+```sh
+mongo lib/setup-mongo.js
 ```
 
 # Running

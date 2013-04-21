@@ -65,6 +65,8 @@ task 'clean', 'clean generated files', ->
   notImplemented ->
     clean
 
+task 'db', 'Create the database for the first time.', ->
+  launch 'mongo', ['lib/setup-mongo.js']
 
 
 # Internal Functions

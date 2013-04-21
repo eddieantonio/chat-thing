@@ -38,6 +38,8 @@ exports.post = (req, res) ->
   msgDbConnect (events, db) ->
 
     record =
+      from: null
+      type: 'msg'
       msg: message
       ts: new Date()
 

@@ -13,9 +13,9 @@ require ['jquery', 'underscore-shim'], ($, _) ->
   displayMessages = (events, displayList) ->
     displayList.append(
       renderMessage
-        author: 'no one'
+        author: event.from
         messageText: event.msg
-    ) for event in events
+    ) for event in events when event.type is 'msg'
 
   # Get the very last timestamp of the last request.
   getLastRequest = (response) ->

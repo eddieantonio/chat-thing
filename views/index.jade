@@ -15,6 +15,12 @@ block extraScripts
   // Underscore templates!
   script(type='text/html', id='_t-message-body')
     li
-      //.author <%= author %>
+      .author
+        |  <% if (author) { %>
+        |     <%= author %>
+        |  <% } else {  %>
+        em.unknown-author Unknown
+        | <% } %>
+
       .msg <%= messageText %>
 
