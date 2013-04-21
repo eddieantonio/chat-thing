@@ -17,6 +17,10 @@
       "jade": ">=0.29",
       "mongodb": ">=1.2"
   },
+  "devDependencies": {
+      "mocha": "",
+      "chai": ""
+  },
   "author": "Eddie Antonio Santos <easantos@ualberta.ca>",
   "license": "MIT"
 }

@@ -78,4 +78,3 @@ require ['jquery', 'underscore-shim'], ($, _) ->
     # Initiate the long-polling
     longpoll()
 
-
