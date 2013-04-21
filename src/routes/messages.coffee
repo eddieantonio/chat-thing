@@ -8,6 +8,11 @@ mongo = require 'mongodb'
 REQUEST_TIMEOUT = 30000
 POLL_INTERVAL = 250
 
+
+
+###
+Connect to MongoDB asychronously, and use the events collection.
+###
 msgDbConnect = (callback) ->
   mongo.MongoClient.connect 'mongodb://127.0.0.1/msgdb', (err, db) ->
     throw err if err
@@ -15,6 +20,8 @@ msgDbConnect = (callback) ->
     # Get the proper collection
     collection = db.collection 'events'
     callback collection, db
+
+
 
 ###
 Post a new message.
@@ -67,6 +74,7 @@ exports.longpoll = (req, res) ->
     # Keep fetchin' 'till we shan't fetch no more...
     keepFetchin = ->
 
+      # Return 'unchanged' after a while.
       return res.send 200, {last: last} unless shouldFetch
 
       # Find all events whose ts is greater than the last.

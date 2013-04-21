@@ -186,22 +186,10 @@ clean = (callback) ->
     callback?()
   catch err
 
-# ## *moduleExists*
-#
-# **given** name for module
-# **when** trying to require module
-# **and** not found
-# **then* print not found message with install helper in red
-# **and* return false if not found
-moduleExists = (name) ->
-  try
-    require name
-  catch err
-    log "#{name} required: npm install #{name}", red
-    false
-
+# Just logs notImplemented and returns false.
 notImplemented = ->
   log 'ERROR', 'task not implemented', red
+  false
 
 
 # ## *mocha*
@@ -210,7 +198,6 @@ notImplemented = ->
 # **and** optional function as callback
 # **then** invoke launch passing mocha command
 mocha = (options, callback) ->
-  #if moduleExists('mocha')
   if typeof options is 'function'
     callback = options
     options = []
@@ -226,6 +213,5 @@ mocha = (options, callback) ->
 # **given** optional function as callback
 # **then** invoke launch passing docco command
 docco = (callback) ->
-  #if moduleExists('docco')
   walk 'src', (err, files) -> launch 'docco', files, callback
 

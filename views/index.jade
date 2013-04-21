@@ -9,6 +9,7 @@ block content
       form(method='POST', action='/message')
         input(type='text', name='message')
         input(type='submit', value='Yarr!')
+        input(type='hidden', name='_csrf', value=csrfToken)
 
 block extraScripts
   // Underscore templates!

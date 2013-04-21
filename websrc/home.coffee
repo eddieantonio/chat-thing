@@ -41,9 +41,9 @@ require ['jquery', 'underscore-shim'], ($, _) ->
         data: lastRequest
         dataType: 'json'
         success: (response) ->
-         if response?.evts?
+          if response?.evts?
             displayMessages response.evts, chatDisplay
-          newLastRequest =  getLastRequest response
+          newLastRequest = getLastRequest response
           # Just request again.
           longpoll newLastRequest
 
