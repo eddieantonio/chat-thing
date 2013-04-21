@@ -56,10 +56,12 @@ task 'watch:srv', 'Watch and compile web sources', ->
 task 'watch:web', 'Watch and compile server-side sources', ->
   build WEB, yes
 
-task 'test', 'Run tests', ->
-  notImplemented ->
-    invoke 'build'
-    mocha
+option '-r', '--reporter [MOCHA_REPORTER]', "set mocha's test reporter"
+
+task 'test', 'Run tests', (options) ->
+  mochaOpts =
+    reporter: options.reporter or 'spec'
+  mocha mochaOpts
 
 task 'clean', 'clean generated files', ->
   notImplemented ->
@@ -199,16 +201,16 @@ notImplemented = ->
 # **given** optional array of option flags
 # **and** optional function as callback
 # **then** invoke launch passing mocha command
-mocha = (options, callback) ->
+mocha = (opts, callback) ->
   if typeof options is 'function'
-    callback = options
-    options = []
-  # add coffee directive
-  options.push '--compilers'
-  options.push 'coffee:coffee-script'
-  options.push '--watch'
-  
-  launch 'mocha', options, callback
+    callback = opts
+    opts = {}
+
+  # Add coffee directive.
+  argv = ['--compilers', 'coffee:coffee-script']
+  argv = argv.concat ['--reporter', opts.reporter] if opts.reporter?
+
+  launch 'mocha', argv, callback
 
 # ## *docco*
 #
