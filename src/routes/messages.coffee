@@ -2,25 +2,29 @@
 Handles messages and stuff!
 ###
 
-mongo = require 'mongodb'
+mongoose = require 'mongoose'
+makeModels = require '../schemata'
 
 # Spend a maximum of 30s on a request.
 REQUEST_TIMEOUT = 30000
+# Rerequest the database every 250ms
 POLL_INTERVAL = 250
 
+# Specifiy the database name
+# TODO: put this in a config file!
+DB_NAME = 'msgdb'
 
 
 ###
 Connect to MongoDB asychronously, and use the events collection.
 ###
-msgDbConnect = (callback) ->
-  mongo.MongoClient.connect 'mongodb://127.0.0.1/msgdb', (err, db) ->
-    throw err if err
+withModels = (callback) ->
+  connection =
+    mongoose.createConnection 'mongodb://127.0.0.1/msgdb'
 
-    # Get the proper collection
-    collection = db.collection 'events'
-    callback collection, db
-
+  connection.once 'connected', ->
+    models = makeModels connection
+    callback models, connection
 
 
 ###
@@ -35,25 +39,17 @@ exports.post = (req, res) ->
     res.send 504
   , REQUEST_TIMEOUT)
 
-  msgDbConnect (events, db) ->
+  withModels (models) ->
 
-    record =
-      from: null
-      type: 'msg'
-      msg: message
-      ts: new Date()
+    {Event} = models
 
-    # This occurs if the record was inserted properly.
-    events.insert record, (err, records) ->
-      clearTimeout timer
-      return res.send 503 if err
+    record = Event.makeMessage null, message
 
-      id = records[0]._id
-
-      res.location "/message/#{id}"
+    record.save (err, msg) ->
+      return res.send 500 if err
+      res.location "/message/#{msg._id}"
       res.send 201
 
-      db.close()
 
 
 ###
@@ -71,7 +67,9 @@ exports.longpoll = (req, res) ->
     shouldFetch = false
   , REQUEST_TIMEOUT)
 
-  msgDbConnect (collection, db) ->
+  withModels (model) ->
+
+    {Event} = model
 
     # Keep fetchin' 'till we shan't fetch no more...
     keepFetchin = ->
@@ -80,21 +78,27 @@ exports.longpoll = (req, res) ->
       return res.send 200, {last: last} unless shouldFetch
 
       # Find all events whose ts is greater than the last.
-      collection.find({ts: {$gt: last}}).toArray (err, docs) ->
+      promise = Event.find({ts: {$gt: last}}).exec()
 
-        return res.send 503 if err
+      promise.then(
+        (docs) ->
+          if docs.length > 0
+            clearTimeout timer
 
-        if docs.length > 0
+            [_..., mostRecent] = docs
+            res.send
+              last: mostRecent.ts
+              evts: docs
+
+          else
+            setTimeout keepFetchin, POLL_INTERVAL
+
+        , ->
+          # On error.
           clearTimeout timer
+          res.send 503
+      )
 
-          [_..., mostRecent] = docs
-          res.send
-            last: mostRecent.ts
-            evts: docs
-
-          db.close()
-        else
-          setTimeout keepFetchin, POLL_INTERVAL
 
     # Start the fetch loop.
     keepFetchin()
@@ -113,7 +117,7 @@ exports.getMessage = (req, res) ->
   catch err
     return res.send 400
 
-  msgDbConnect (events, db) ->
+  withModels (events, db) ->
 
     events.findOne {_id: oid}, (err, doc) ->
       if doc?
