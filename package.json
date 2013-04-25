@@ -12,10 +12,11 @@
     "url": "git://github.com/eddieantonio/chat-thing.git"
   },
   "dependencies": {
-      "up": "0.2.2",
-      "express": ">=3.0",
-      "jade": ">=0.29",
-      "mongodb": ">=1.2"
+      "up":       "0.2.2",
+      "express":  ">=3.0",
+      "jade":     ">=0.29",
+      "mongodb":  ">=1.2",
+      "mongoose": ">=3.0"
   },
   "devDependencies": {
       "mocha": "",

@@ -16,12 +16,6 @@ Install package dependencies:
 npm install
 ```
 
-And setup the database:
-
-```sh
-mongo lib/setup-mongo.js
-```
-
 # Running
 
 ```sh
