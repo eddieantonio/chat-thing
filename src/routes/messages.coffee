@@ -20,7 +20,7 @@ Connect to MongoDB asychronously, and use the events collection.
 ###
 withModels = (callback) ->
   connection =
-    mongoose.createConnection 'mongodb://127.0.0.1/msgdb'
+    mongoose.createConnection "mongodb://127.0.0.1/#{DB_NAME}"
 
   connection.once 'connected', ->
     models = makeModels connection
@@ -45,8 +45,14 @@ exports.post = (req, res) ->
 
     record = Event.makeMessage null, message
 
+    Event.on 'error', ->
+      res.send 500 if err
+
     record.save (err, msg) ->
+      clearTimeout timer
+
       return res.send 500 if err
+
       res.location "/message/#{msg._id}"
       res.send 201
 
@@ -112,18 +118,21 @@ exports.getMessage = (req, res) ->
 
   {id} = req.params
 
-  try
-    oid = new mongo.ObjectID id
-  catch err
-    return res.send 400
+  oid = new mongoose.Types.ObjectId id
 
-  withModels (events, db) ->
+  withModels (models) ->
+    {Event} = models
 
-    events.findOne {_id: oid}, (err, doc) ->
-      if doc?
-        res.send doc
-      else
-        res.send 404
-      db.close()
+    promise = Event.findOne().where('_id').equals(oid).exec()
+    promise.then(
+      (doc) ->
+        if doc?
+          res.send doc
+        else
+          res.send 404
+
+      , ->
+        res.send 503
+    )
 
 
